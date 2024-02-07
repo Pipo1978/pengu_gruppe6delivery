@@ -7,6 +7,10 @@ version '1.0.2'
 shared_scripts {
 	'config.lua',
 	'@ox_lib/init.lua', -- If you use OX Dialog uncomment this.
+	-- added for translation
+	'@qb-core/shared/locale.lua',
+    'locales/en.lua',
+    'locales/*.lua'
 
 }
 
