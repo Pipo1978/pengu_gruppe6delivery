@@ -9,7 +9,7 @@ QBCore.Functions.CreateUseableItem(Config.BagItemName, function(source, item)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if Player.Functions.GetItemByName(item.name) then
-        print('opening')
+        --print('opening')
     end
 end)
 
@@ -83,7 +83,7 @@ end)
 RegisterNetEvent('pengu_gruppe6delivery:SpawnVehicle', function()
     local vec = Config.VehicleSpawns[math.random(1, #Config.VehicleSpawns)]
     local model = Config.Vehicle
-    local plate = "GRUP"..source
+    local plate = "GRUP"..tostring(math.random(1000, 9999)) --source
     local spawning = false
     while spawning do
         Wait(5000)
@@ -98,7 +98,7 @@ end)
 
 RegisterNetEvent('pengu_gruppe6delivery:PutBagIntoTrunk', function(plate)
     local Player = QBCore.Functions.GetPlayer(source)
-    print(plate)
+    --print(plate)
     if Config.Inventory == 'ox' then
         local vehicleInventoryId = 'trunk'..plate
         local vehicleInventory = exports.ox_inventory:GetInventory(vehicleInventoryId, false)
@@ -136,7 +136,7 @@ end)
 
 QBCore.Functions.CreateCallback('pengu_gruppe6delivery:GetBagsFromVehicle', function(source, cb, model)
     model = NetworkGetEntityFromNetworkId(model)
-    print(RobbedVehicles[model])
+    --print(RobbedVehicles[model])
     if RobbedVehicles[model] then
         cb('robbed')
     end
@@ -147,7 +147,7 @@ QBCore.Functions.CreateCallback('pengu_gruppe6delivery:GetBagsFromVehicle', func
             break
         end
     end
-    print('lol')
+    --print('lol')
     RobbedVehicles[model] = model
     cb(false)
 end)
@@ -170,20 +170,41 @@ RegisterNetEvent('pengu_gruppe6delivery:RobbedItem', function(ink, amount)
         if Config.Inventory == 'ox' then
             if exports.ox_inventory:CanCarryAmount(source, Config.BagItemName) then
                 if exports.ox_inventory:AddItem(source, Config.BagItemName, amount) then end
+                -- Need to be coded to OX-Inventory
             end
         elseif Config.Inventory == 'qb' then
-            if Player.Functions.AddItem(Config.BagItemName, amount) then end
+            --if Player.Functions.AddItem(Config.BagItemName, amount) then end -- OLD Function
+
+            -- Give random value after solve correctly
+            Player.Functions.AddMoney("cash", math.random(Config.RewardMin, Config.RewardMax))
         end
     elseif ink == 'inked' then
         if Config.Inventory == 'ox' then
             if exports.ox_inventory:CanCarryAmount(source, Config.InkedItemName) then
                 if exports.ox_inventory:AddItem(source, Config.InkedItemName, amount) then end
+                -- Need to be coded to OX-Inventory
             else 
             end
         elseif Config.Inventory == 'qb' then
-            if Player.Functions.AddItem(Config.InkedItemName, amount) then end
+            --if Player.Functions.AddItem(Config.InkedItemName, amount) then end -- OLD Function
+            
+            -- CHANGED to give a random value of markedbills based Config
+            local info = {worth = math.random(Config.RewardMin, Config.RewardMax)}
+            -- Changed the function to make markedbills had value inside
+            Player.Functions.AddItem(Config.InkedItemName, amount, false, info)
+            TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items[Config.InkedItemName], "add", amount) 
+            TriggerEvent("qb-log:server:CreateLog", "pengu_gruppe6delivery", "Banktruck Rewards", "default", "**".. Player.PlayerData.name .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..source.."*)".." Received the following from the bank truck. **Loot**: *"..amount.."* ")--" ..amount.. )
         end
 
     end
+end)
+
+RegisterServerEvent("pengu_gruppe6delivery:removeThermite", function() -- Remove thremite from inventory
+	local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return end
+
+    Player.Functions.RemoveItem("thermite", 1) 
+    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["thermite"], "remove", 1)  
 end)
 
