@@ -58,11 +58,11 @@ CreateThread(function()
     if Config.Menu == 'ox' then
         lib.registerContext({
             id = "gruppe6jobmenustart",
-            title = "Gruppe 6 Job Menu",
+            title = Lang:t('delivery.org_t_header'),
             options = {
                 {
-                    title = "Start Working",
-                    description = "Clock on duty at Gruppe 6!",
+                    title = Lang:t('delivery.del_t_start_work'),
+                    description = Lang:t('delivery.del_d_start_work'),
                     icon = "fas fa-box",
                     serverEvent = "pengu_gruppe6delivery:ToggleIsOnDuty",
                 }
@@ -70,17 +70,17 @@ CreateThread(function()
         })
         lib.registerContext({
             id = "gruppe6jobmenustopstart",
-            title = "Gruppe 6 Job Menu",
+            title = Lang:t('delivery.org_t_header'),
             options = {
                 {
-                    title = "Stop Working",
-                    description = "Clock off duty at Gruppe 6!",
+                    title = Lang:t('delivery.del_t_stop_work'),
+                    description = Lang:t('delivery.del_d_stop_work'),
                     icon = "fas fa-box",
                     serverEvent = "pengu_gruppe6delivery:ToggleIsOnDuty",
                 },
                 {
-                    title = "Start Delivering Bags",
-                    description = "Start retrieving bags of cash.",
+                    title = Lang:t('delivery.del_t_start_bags'),
+                    description = Lang:t('delivery.del_d_start_bags'),
                     icon = "fas fa-box",
                     serverEvent = "pengu_gruppe6delivery:SpawnVehicle",
                 }
@@ -91,14 +91,14 @@ CreateThread(function()
             title = "Gruppe 6 Job Menu",
             options = {
                 {
-                    title = "Stop Working",
-                    description = "Clock off duty at Gruppe 6!",
+                    title = Lang:t('delivery.del_t_stop_work'),
+                    description = Lang:t('delivery.del_d_stop_work'),
                     icon = "fas fa-box",
                     serverEvent = "pengu_gruppe6delivery:ToggleIsOnDuty",
                 },
                 {
-                    title = "Stop Delivering Bags",
-                    description = "Stop retrieving bags of cash.",
+                    title = Lang:t('delivery.del_t_stop_bags'),
+                    description = Lang:t('delivery.del_d_stop_bags'),
                     icon = "fas fa-box",
                     event = "pengu_gruppe6delivery:StopDeliveries",
                 }
@@ -125,7 +125,7 @@ CreateThread(function()
                 type = "client",
                 event = "pengu_gruppe6delivery:OpenGruppe6JobMenu",
                 icon = 'fas fa-bars',
-                label = 'Access Gruppe 6 Job Menu',
+                label = Lang:t('target.open_menu'),
                 
             }
             },
@@ -133,7 +133,7 @@ CreateThread(function()
         })
     elseif Config.Target == 'ox' then
         exports.ox_target:addLocalEntity(ent, {
-            label = "Access Gruppe 6 Job Menu",
+            label = Lang:t('target.open_menu'),
             icon = "fas fa-bars",
             distance = 3,
             event = "pengu_gruppe6delivery:OpenGruppe6JobMenu",
@@ -152,13 +152,13 @@ RegisterNetEvent('pengu_gruppe6delivery:OpenGruppe6JobMenu', function(data)
             local menu = {}
             local duty = cb
             menu[#menu+1] = {
-                header = "Gruppe 6 Job Menu",
+                header = Lang:t('delivery.del_t_header'),--"Gruppe 6 Job Menu - Principal",
                 isMenuHeader = true
             }
             if not duty then
                 menu[#menu+1] = {
-                    header = "Start Working",
-                    txt = "Start Delivering High-Value Packages!",
+                    header = Lang:t('delivery.del_t_start_work'),
+                    txt = Lang:t('delivery.del_d_start_work'),
                     icon = "fas fa-box",
                     params = {
                         event = "pengu_gruppe6delivery:ToggleIsOnDuty",
@@ -167,8 +167,8 @@ RegisterNetEvent('pengu_gruppe6delivery:OpenGruppe6JobMenu', function(data)
                 }
             else
                 menu[#menu+1] = {
-                    header = "Stop Working",
-                    txt = "Stop Delivering High-Value Packages!",
+                    header = Lang:t('delivery.del_t_stop_work'),
+                    txt = Lang:t('delivery.del_d_stop_work'),
                     icon = "fas fa-box",
                     params = {
                         event = "pengu_gruppe6delivery:ToggleIsOnDuty",
@@ -177,8 +177,8 @@ RegisterNetEvent('pengu_gruppe6delivery:OpenGruppe6JobMenu', function(data)
                 }
                 if DoingDeliveries then
                     menu[#menu+1] = {
-                        header = "Stop Delivering Bags",
-                        txt = "Stop retrieving bags of cash.",
+                        header = Lang:t('delivery.del_t_stop_bags'),
+                        txt = Lang:t('delivery.del_d_stop_bags'),
                         icon = "fas fa-box",
                         params = {
                             event = "pengu_gruppe6delivery:StopDeliveries",
@@ -186,8 +186,8 @@ RegisterNetEvent('pengu_gruppe6delivery:OpenGruppe6JobMenu', function(data)
                     }
                 else
                     menu[#menu+1] = {
-                        header = "Start Delivering Bags",
-                        txt = "Start retrieving bags of cash.",
+                        header = Lang:t('delivery.del_t_start_bags'),
+                        txt = Lang:t('delivery.del_d_start_bags'),
                         icon = "fas fa-box",
                         params = {
                             event = "pengu_gruppe6delivery:SpawnVehicle",
@@ -224,7 +224,7 @@ RegisterNetEvent('pengu_gruppe6delivery:StartFirstJob', function(args)
     if Organizing then
         Organizing = false
     end
-    TriggerEvent('pengu_gruppe6delivery:Notify', "Go to the vehicle with the marker above it!", "There's an orange marker above the vehicle you are going to use.", "primary", 4000)
+    TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.takeveh'), "Text", "primary", 4000)
     local vehicle = args["veh"]
     DoingDeliveries = true
     TriggerEvent("vehiclekeys:client:SetOwner", args["plate"])
@@ -241,8 +241,8 @@ end)
 
 RegisterNetEvent('pengu_gruppe6delivery:RecieveDestinationOne', function(veh)
     if DoingDeliveries == true then
-        TriggerEvent('pengu_gruppe6delivery:Notify', "Go to the bag on your map!", "Check your map!", "primary", 4000)
-        local model = 'prop_big_bag_01'
+        TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.dest_work'), nil , "success", 4000)
+        local model = 'prop_cash_trolly'
         local BagsRemaining = math.random(Config.MinBagsPerDestination,Config.MaxBagsPerDestination)
         --local initialBags = BagsRemaining
         local location = Config.BagSpawns[math.random(#Config.BagSpawns)]
@@ -262,13 +262,13 @@ RegisterNetEvent('pengu_gruppe6delivery:RecieveDestinationOne', function(veh)
         local ent = nil
         repeat
             ent = CreateObject(model, location, false, false, false)
-            print('process')
+            --print('process')
         until ent
         Wait(500)
         FreezeEntityPosition(ent, true)
         SetEntityInvincible(ent, true)
         SetEntityCanBeDamaged(ent, false)
-        print(BagsRemaining)
+        --print(BagsRemaining)
         if Config.Target == 'qb' then
             exports['qb-target']:AddTargetEntity(ent, {
                 options = {
@@ -276,13 +276,13 @@ RegisterNetEvent('pengu_gruppe6delivery:RecieveDestinationOne', function(veh)
                     num = 1,
                     type = "client",
                     icon = 'fas fa-bars',
-                    label = 'Pick Up A Bag',
+                    label = Lang:t('target.take'),
                     action = function()
                         if not busy then
                             busy = true
     
                             if Config.Progressbar == 'qb' then
-                                QBCore.Functions.Progressbar('pickupgruppe6bag', 'Picking Up Bag', 2000, false, false, { -- Name | Label | Time | useWhileDead | canCancel
+                                QBCore.Functions.Progressbar('pickupgruppe6bag', Lang:t('text.progress'), 2000, false, false, { -- Name | Label | Time | useWhileDead | canCancel
                                     disableMovement = true,
                                     disableCarMovement = true,
                                     disableMouse = false,
@@ -296,7 +296,7 @@ RegisterNetEvent('pengu_gruppe6delivery:RecieveDestinationOne', function(veh)
                                 end)
                             elseif Config.Progressbar == 'ox' then
                                 if lib.progressCircle({
-                                    label = "Picking Up Bag",
+                                    label = Lang:t('text.progress'),
                                     duration = 2000,
                                     position = 'bottom',
                                     useWhileDead = false,
@@ -314,10 +314,10 @@ RegisterNetEvent('pengu_gruppe6delivery:RecieveDestinationOne', function(veh)
     
                             while not Pass do
                                 Wait(1)
-                                print('inpass')
+                                --print('inpass')
                             end
                             Pass = false
-                            print('af pass')
+                            --print('af pass')
                             ClearPedTasksImmediately(ped)
                             --BagObject = CreateObject(model, 0, 0, 0, true, true, true)
                             TriggerServerEvent('pengu_gruppe6delivery:AddItem', Config.BagItemName)
@@ -325,9 +325,9 @@ RegisterNetEvent('pengu_gruppe6delivery:RecieveDestinationOne', function(veh)
                             BagsRemaining -= 1
                             if BagsRemaining == 0 then
                                 DeleteObject(ent)
-                                TriggerEvent('pengu_gruppe6delivery:Notify', "That's It!", nil, "success", 4000)
+                                TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.done_collecting'), nil, "success", 4000)
                             else
-                                TriggerEvent('pengu_gruppe6delivery:Notify', BagsRemaining .. " Bags Left!", "Just a bit more to go!", "primary", 4000)
+                                TriggerEvent('pengu_gruppe6delivery:Notify', BagsRemaining .. Lang:t('text.bag_left'), nil, "primary", 4000)
                             end
                         end
                     end
@@ -337,7 +337,7 @@ RegisterNetEvent('pengu_gruppe6delivery:RecieveDestinationOne', function(veh)
             })
         elseif Config.Target == 'ox' then
             exports.ox_target:addLocalEntity(ent, {
-                label = 'Pick Up A Bag',
+                label = Lang:t('target.take'),
                 icon = "fas fa-bars",
                 distance = 3,
                 onSelect = function()
@@ -345,7 +345,7 @@ RegisterNetEvent('pengu_gruppe6delivery:RecieveDestinationOne', function(veh)
                         busy = true
 
                         if Config.Progressbar == 'qb' then
-                            QBCore.Functions.Progressbar('pickupgruppe6bag', 'Picking Up Bag', 2000, false, false, { -- Name | Label | Time | useWhileDead | canCancel
+                            QBCore.Functions.Progressbar('pickupgruppe6bag', Lang:t('text.progress'), 2000, false, false, { -- Name | Label | Time | useWhileDead | canCancel
                                 disableMovement = true,
                                 disableCarMovement = true,
                                 disableMouse = false,
@@ -359,7 +359,7 @@ RegisterNetEvent('pengu_gruppe6delivery:RecieveDestinationOne', function(veh)
                             end)
                         elseif Config.Progressbar == 'ox' then
                             if lib.progressCircle({
-                                label = "Picking Up Bag",
+                                label = Lang:t('text.progress'),
                                 duration = 2000,
                                 position = 'bottom',
                                 useWhileDead = false,
@@ -377,10 +377,10 @@ RegisterNetEvent('pengu_gruppe6delivery:RecieveDestinationOne', function(veh)
 
                         while not Pass do
                             Wait(1)
-                            print('inpass')
+                            --print('inpass')
                         end
                         Pass = false
-                        print('af pass')
+                        --print('af pass')
                         ClearPedTasksImmediately(ped)
                         --BagObject = CreateObject(model, 0, 0, 0, true, true, true)
                         TriggerServerEvent('pengu_gruppe6delivery:AddItem', Config.BagItemName)
@@ -388,20 +388,20 @@ RegisterNetEvent('pengu_gruppe6delivery:RecieveDestinationOne', function(veh)
                         BagsRemaining -= 1
                         if BagsRemaining == 0 then
                             DeleteObject(ent)
-                            TriggerEvent('pengu_gruppe6delivery:Notify', "That's It!", nil, "success", 4000)
+                            TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.done_collecting'), nil, "success", 4000)
                         else
-                            TriggerEvent('pengu_gruppe6delivery:Notify', BagsRemaining .. " Bags Left!", "Just a bit more to go!", "primary", 4000)
+                            TriggerEvent('pengu_gruppe6delivery:Notify', BagsRemaining .. Lang:t('text.bag_left'), nil, "primary", 4000)
                         end
                     end
                 end,
                 serverEvent = false,
             })
         end    
-        print(BagsRemaining)
+        --print(BagsRemaining)
         while BagsRemaining ~= 0 do
             Wait(1)
         end
-        TriggerEvent('pengu_gruppe6delivery:Notify', "Good job!", "Now, drop this off safely!", "primary", 4000)
+        TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.good_job'), nil, "primary", 4000)
         SetBlipRoute(destination, false)
         RemoveBlip(destination)
         destination = nil
@@ -420,7 +420,7 @@ CreateThread(function()
     while not HasAnimDictLoaded('missfbi4prepp1') do
         Wait(1)
     end
-    local model = 'prop_big_bag_01'
+    local model = 'prop_big_bag_01' -- changed to a small bag of money. Old one 'prop_big_bag_01'
     RequestModel(model)
     while not HasModelLoaded(model) do
         Wait(1)
@@ -428,11 +428,11 @@ CreateThread(function()
 
     while true do
         if QBCore.Functions.HasItem(Config.BagItemName) or QBCore.Functions.HasItem(Config.InkedItemName) then
-            print(BagObject)
+            --print(BagObject)
             if not BagObject then
                 BagObject = CreateObject(model, 0, 0, 0, true, true, true)
             end
-            print(IsEntityAttached(BagObject))
+            --print(IsEntityAttached(BagObject))
             if not IsEntityAttached(BagObject) then
                 AttachEntityToEntity(BagObject, ped, GetPedBoneIndex(ped, 57005), 0.23, -0.01, -0.185, 220.0, 95.0, 70.0, true, true, false, true, 1, true)
             end
@@ -466,12 +466,12 @@ CreateThread(function()
                 num = 1,
                 type = "client",
                 icon = 'fas fa-bars',
-                label = 'Put Bag Down',
+                label = Lang:t('target.drop'),
                 action = function()
                         if QBCore.Functions.HasItem(Config.BagItemName) then
                             busy = true
                             if Config.Progressbar == 'qb' then
-                                QBCore.Functions.Progressbar('pickupgruppe6bag', 'Putting Bag Down', 2000, false, false, { -- Name | Label | Time | useWhileDead | canCancel
+                                QBCore.Functions.Progressbar('pickupgruppe6bag', Lang:t('text.delivering'), 2000, false, false, { -- Name | Label | Time | useWhileDead | canCancel
                                     disableMovement = true,
                                     disableCarMovement = true,
                                     disableMouse = false,
@@ -485,7 +485,7 @@ CreateThread(function()
                                 end)
                             elseif Config.Progressbar == 'ox' then
                                 if lib.progressCircle({
-                                    label = "Putting Bag Down",
+                                    label = Lang:t('text.delivering'),
                                     duration = 2000,
                                     position = 'bottom',
                                     useWhileDead = false,
@@ -510,6 +510,9 @@ CreateThread(function()
                             TotalBagsDelivered += 1
                             TriggerServerEvent('pengu_gruppe6delivery:RemoveItem', Config.BagItemName)
                             StopAnimTask(ped, "missfbi4prepp1", "_bag_walk_garbage_man", 1.0)
+                        else
+                            -- Added to alert player that thereis no more bags left to delivery.
+                            TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.nomore'), nil, "error", 4000)
                         end
                     end
                 }
@@ -524,14 +527,14 @@ CreateThread(function()
             debug = false,
             options = {
                 {
-                    label = "Put Bag Down",
+                    label = Lang:t('target.drop'),
                     icon = "fas fa-bars",
                     distance = 3,
                     onSelect = function()
                         if QBCore.Functions.HasItem(Config.BagItemName) then
                             busy = true
                             if Config.Progressbar == 'qb' then
-                                QBCore.Functions.Progressbar('pickupgruppe6bag', 'Putting Bag Down', 2000, false, false, { -- Name | Label | Time | useWhileDead | canCancel
+                                QBCore.Functions.Progressbar('pickupgruppe6bag', Lang:t('text.delivering'), 2000, false, false, { -- Name | Label | Time | useWhileDead | canCancel
                                     disableMovement = true,
                                     disableCarMovement = true,
                                     disableMouse = false,
@@ -545,7 +548,7 @@ CreateThread(function()
                                 end)
                             elseif Config.Progressbar == 'ox' then
                                 if lib.progressCircle({
-                                    label = "Putting Bag Down",
+                                    label = Lang:t('text.delivering'),
                                     duration = 2000,
                                     position = 'bottom',
                                     useWhileDead = false,
@@ -570,6 +573,9 @@ CreateThread(function()
                             TotalBagsDelivered += 1
                             TriggerServerEvent('pengu_gruppe6delivery:RemoveItem', Config.BagItemName)
                             StopAnimTask(ped, "missfbi4prepp1", "_bag_walk_garbage_man", 1.0)
+                        else
+                            -- Added to alert player that thereis no more bags left to delivery.
+                            TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.nomore'), nil, "error", 4000)
                         end
                     end,
                     serverEvent = false,
