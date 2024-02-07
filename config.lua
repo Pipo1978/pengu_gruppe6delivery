@@ -1,13 +1,17 @@
-Config = {}
+Config = {
+    Lan = "en",
+}
 
-Config.Notify = 'ox' -- 'qb' or 'ox' or 'none'
-Config.Target = 'ox' -- 'qb' or 'ox'
-Config.Menu = 'ox' -- 'qb' or 'ox'
-Config.Progressbar = 'ox' -- 'qb' or 'ox'
-Config.Inventory = 'ox' -- 'qb' or 'ox'
-Config.Skillcheck = 'ox' -- 'ps' or 'ox'
+print("^2Pengu^7-^2Gruppe6Delivery v^41^7.^40^7.^42 ^7- ^2Gruppe6 Delivery Job by ^1PenguScript^7")
 
-Config.FuelResource = 'qb_tk_gasstations'
+Config.Notify = 'qb' -- 'qb' or 'ox' or 'none'
+Config.Target = 'qb' -- 'qb' or 'ox'
+Config.Menu = 'qb' -- 'qb' or 'ox'
+Config.Progressbar = 'qb' -- 'qb' or 'ox'
+Config.Inventory = 'qb' -- 'qb' or 'ox'
+Config.Skillcheck = 'ps' -- 'ps' or 'ox'
+
+Config.FuelResource = 'cdn-fuel' 
 
 Config.StartDeliveryPed = {
     Coords = vector4(-4.22, -659.18, 32.48, 183.34),
@@ -17,7 +21,12 @@ Config.StartDeliveryPed = {
 }
 
 Config.BagItemName = 'cash_bag'
-Config.InkedItemName = 'inked_cash_bag'
+
+-- Truck Robbery config
+Config.InkedItemName = 'markedbills'
+-- Min and Max of money reward on banktruck robbery (those values applies to inked and no-inked)
+Config.RewardMin = '500'
+Config.RewardMax = '12000'
 
 Config.Vehicle = 'stockade'
 
@@ -40,7 +49,16 @@ Config.BagSpawns = {
     --[[vector4(234.72, 209.21, 104.39, 161.51),
     vector4(929.34, 55.75, 80.1, 65.93),]]
     -- ADD MORE IN THE SAME FORMAT
-    vector4(-12.45, -678.57, 32.34, 206.6)
+    --vector4(-12.45, -678.57, 32.34, 206.6)
+    vector4(145.2, -1044.25, 28.37, 91.4),
+    vector4(309.44, -282.76, 53.16, 53.18),
+    vector4(-355.57, -53.46, 48.04, 63.8),
+    vector4(-1212.12, -336.08, 36.79, 124.28),
+    vector4(236.14, 212.81, 109.28, 350.25),
+    vector4(-2957.66, 481.24, 14.71, 198.58),
+    vector4(-103.1, 6472.33, 30.63, 130.19),
+    vector4(1177.5, 2712.06, 37.1, 252.13),
+
 }
 
 Config.DropSpot = vector3(-9.58, -654.66, 32.91)
