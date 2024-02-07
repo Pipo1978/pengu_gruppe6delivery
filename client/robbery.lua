@@ -1,5 +1,7 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local Robbing = false
+local copsCalled = false
+
 CreateThread(function()
     for _,v in pairs(Config.RobberySettings.StockadeModels) do
         if Config.Target == 'qb' then
@@ -9,8 +11,9 @@ CreateThread(function()
                     num = 1,
                     type = "client",
                     event = "pengu_gruppe6delivery:StartRobbery",
-                    icon = 'fas fa-bars',
-                    label = 'Break Open Trunk',
+                    icon = 'fas fa-burst',
+                    label = Lang:t('target.robbery'),
+                    item = 'thermite', -- Added to force player have thermite to bruteforce
                     
                 }
                 },
@@ -18,8 +21,8 @@ CreateThread(function()
             })
         elseif Config.Target == 'ox' then
             exports.ox_target:addModel(v, {
-                label = "Break Open Trunk",
-                icon = "fas fa-bars",
+                label = Lang:t('target.robbery'),
+                icon = "fas fa-burst",
                 distance = Config.RobberySettings.RobberyDistance,
                 event = "pengu_gruppe6delivery:StartRobbery",
                 serverEvent = false,
@@ -27,6 +30,34 @@ CreateThread(function()
         end
     end
 end)
+
+--- Method to send an alert to cops and set a 5 minute cooldown for alerting cops
+--- @return nil
+local AlertCops = function()
+
+    if copsCalled then return end
+    copsCalled = true
+
+    exports["ps-dispatch"]:CustomAlert({
+        coords = GetEntityCoords(PlayerPedId()),
+        message = "Roubo de Caminhão Forte",
+        dispatchCode = "10-46",
+        description = "Roubo de Caminhão Forte",
+        radius = 0,
+        sprite = 229,
+        color = 1,
+        scale = 0.9,
+        length = 3,
+    })
+    TriggerServerEvent('police:server:policeAlert', 'Roubo de Carro-Forte') -- Regular QBCore
+
+    -- Uncomment below to return cooldown police notifications.
+    -- CreateThread(function()
+    --     Wait(5*60*1000)
+    --     copsCalled = false
+    
+    -- end)
+end
 
 local function OpenTrunk(plate)
     if Config.Inventory == 'qb' then
@@ -42,7 +73,7 @@ RegisterNetEvent('pengu_gruppe6delivery:StartRobbery', function(args)
     local entity = args.entity
     local BagsToSteal = 0
     local VehicleDestroyed = false
-    print(GetVehicleEngineHealth(entity))
+    -- print(GetVehicleEngineHealth(entity))
     if not Robbing then
         if GetPedInVehicleSeat(entity, -1) and GetPedInVehicleSeat(entity, 0) == 0 then 
             if not HasAnimDictLoaded('anim_h eist@hs3f@ig13_thermal_charge@thermal_charge@male@') then  
@@ -62,7 +93,10 @@ RegisterNetEvent('pengu_gruppe6delivery:StartRobbery', function(args)
                 while not HasModelLoaded('hei_prop_heist_thermite_flash') do
                     Wait(1)
                 end
-            end        
+            end
+
+            -- Invoke function to Call cops
+            AlertCops()
 
             UseParticleFxAssetNextCall("core")
             if Config.Inventory == 'qb' then
@@ -80,10 +114,10 @@ RegisterNetEvent('pengu_gruppe6delivery:StartRobbery', function(args)
                     local ped = cache.ped or PlayerPedId()
                     LocalPlayer.state.invBusy = true
                     DisableAllControlActions(0)
-
+                    
                     if result then
                         if result == 'robbed' then
-                            TriggerEvent('pengu_gruppe6delivery:Notify', "This has already been robbed!", nil, 'success', 3000)
+                            TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.robbed'), nil, 'error', 3000)
                             LocalPlayer.state.invBusy = false
                             EnableAllControlActions(0)
         
@@ -94,6 +128,7 @@ RegisterNetEvent('pengu_gruppe6delivery:StartRobbery', function(args)
                         -- Player Stockade
 
                     else
+                        TriggerServerEvent("pengu_gruppe6delivery:removeThermite") -- Added to remove thermite from inventory
                         BagsToSteal = math.random(Config.RobberySettings.MinBags,Config.RobberySettings.MaxBags)
                     end
 
@@ -108,15 +143,15 @@ RegisterNetEvent('pengu_gruppe6delivery:StartRobbery', function(args)
                         Wait(1)
                         time=time+1
                         if time == 5000.0 then
-                            print('broken')
+                            --print('broken')
                             ClearPedTasksImmediately(ped)
                             break
                         end
                     end
-                    print('lol')
+                    -- print('lol')
                     if GetVehicleBodyHealth(entity) == 0.0 and GetVehicleEngineHealth(entity) < 0.0 then
                         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entity), 1)
-                        TriggerEvent('pengu_gruppe6delivery:Notify', "The vehicle's electronics are broken!", "You were able to open the doors easily", 'success', 3000)
+                        TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.lol'), nil, 'success', 3000)
                         TriggerServerEvent('pengu_gruppe6delivery:RobbedItem', 'uninked', BagsToSteal)
                         if result then
                             
@@ -188,18 +223,18 @@ RegisterNetEvent('pengu_gruppe6delivery:StartRobbery', function(args)
 
                     
 
-                    TriggerEvent('pengu_gruppe6delivery:Notify', "Hack the ink bomb!", "Or else your stolen money will be useless!", "primary", 6000)
+                    TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.inkbomb'), nil, "primary", 6000)
                     local Difficulties = {}
                     Wait(3000)
                     for i=1, BagsToSteal do
                         Difficulties[#Difficulties+1] = "easy"
                     end
                     if lib.skillCheck(Difficulties, {"e"}) then
-                        TriggerEvent('pengu_gruppe6delivery:Notify', "You defused the ink bomb!", nil, 'success', 3000)
+                        TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.defused'), nil, 'success', 3000)
                         TriggerServerEvent('pengu_gruppe6delivery:RobbedItem', 'uninked', BagsToSteal)
 
                     else
-                        TriggerEvent('pengu_gruppe6delivery:Notify', "The ink bomb blew up....", nil, 'error', 3000)
+                        TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.defuse_fail'), nil, 'error', 3000)
                         TriggerServerEvent('pengu_gruppe6delivery:RobbedItem', 'inked', BagsToSteal)
 
                     end
@@ -217,6 +252,6 @@ RegisterNetEvent('pengu_gruppe6delivery:StartRobbery', function(args)
             end
         end
     else
-        TriggerEvent('pengu_gruppe6delivery:Notify', "You're already busy", nil, 'error', 3000)
+        TriggerEvent('pengu_gruppe6delivery:Notify', Lang:t('text.busy'), nil, 'error', 3000)
     end
 end)
